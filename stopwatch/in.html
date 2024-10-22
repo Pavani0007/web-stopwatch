@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+</head>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+
+
+<body>
+    <div class="container">
+        <div class="watch">
+            <div class="outer">
+                <div class="inner">
+                    <span class="text min">0 :</span>
+                    <span class="text sec">&nbsp; 0 :</span>
+                    <span class="text msec">&nbsp; 0</span>
+                </div>
+            </div>
+            <div class="btn">
+                <button class="btnn reset display">reset</button>
+                <button class="btnn play">play</button>
+                <button class="btnn laps display">lap</button>
+            </div>
+        </div>
+    </div>
+    <ul class="lap"></ul> <!-- List to show lap times -->
+    <button class="button display">Clear All</button> <!-- Clear All button -->
+</body>
+
+<script>
+    const playb = document.getElementsByClassName("play")[0];
+    const resetb = document.getElementsByClassName("reset")[0];
+    const lapsb = document.getElementsByClassName("laps")[0];
+    const secb = document.getElementsByClassName("sec")[0];
+    const msecb = document.getElementsByClassName("msec")[0];
+    const minb = document.getElementsByClassName("min")[0];
+    const lapb = document.getElementsByClassName("lap")[0];
+    const clearb = document.getElementsByClassName("button")[0];
+    const bg = document.getElementsByClassName("outer")[0];
+
+    let lapi = 0;
+    let isplay = false;
+    let seccounter = 0;
+    let mseccounter = 0;
+    let sec, msec, min;
+    let minco = 0;
+    let isreset = false;
+
+    const play = () => {
+        if (!isplay && !isreset) {
+            playb.textContent = "pause";
+            bg.classList.add('animation-bg')
+            sec = setInterval(() => {
+                if (seccounter === 59) {
+                    seccounter = 0;
+                }
+                secb.textContent = `${++seccounter} :`;
+            }, 1000);
+
+            msec = setInterval(() => {
+                if (mseccounter === 100) {
+                    mseccounter = 0;
+                }
+                msecb.textContent = `${++mseccounter}`;
+            }, 10);
+
+            min = setInterval(() => {
+                minb.textContent = `${++minco} :`;
+            }, 60 * 1000);
+
+            isplay = true;
+            isreset = true;
+        } else {
+            playb.textContent = "play";
+            clearInterval(sec);
+            clearInterval(msec);
+            clearInterval(min);
+            isplay = false;
+            isreset=false
+            bg.classList.remove('animation-bg')
+        }
+        togg();
+    };
+
+    const togg = () => {
+        lapsb.classList.remove("display");
+        resetb.classList.remove("display");
+    };
+
+    const reset = () => {
+        clearInterval(sec);
+        clearInterval(msec);
+        clearInterval(min);
+        seccounter = 0;
+        mseccounter = 0;
+        minco = 0;
+        secb.textContent = "0 :";
+        msecb.textContent = "0";
+        minb.textContent = "0 :";
+        isreset = false;
+        isplay = false;
+        playb.textContent = "play";
+        lapsb.classList.add("display");
+        resetb.classList.add("display");
+    };
+
+    const lap = () => {
+        const li = document.createElement("li");
+        const number = document.createElement("span");
+        const time = document.createElement("span");
+
+        li.setAttribute("class", "ltime");
+        number.setAttribute("class", "number");
+        time.setAttribute("class", "time-stamp");
+
+        number.innerText = `#${++lapi}`;
+        time.innerHTML = `${minco}:${seccounter}:${mseccounter}`;
+
+        li.append(number, time);
+        lapb.append(li);
+        clearb.classList.remove("display"); // Show "Clear All" button when a lap is added
+    };
+
+    const clearall = () => {
+        lapb.innerHTML = " "; 
+        lapb.append(clearb)
+        clearb.classList.add("display"); // Hide "Clear All" button after clearing
+    };
+
+    playb.addEventListener("click", play);
+    resetb.addEventListener("click", reset);
+    lapsb.addEventListener("click", lap);
+    clearb.addEventListener("click", clearall);
+</script>
+
+</html>
